@@ -212,7 +212,7 @@ function createObstacle() {
   obstacle.style.animationDuration = `${Math.random() * 1.4 + 2.2}s`;
   obstacle.style.setProperty("--obstacle-fall-distance", `${gameContainer.clientHeight + 40}px`);
 
-  obstacle.addEventListener("click", () => {
+  obstacle.addEventListener("click", (event) => {
     if (!gameRunning || !challengeActive) return;
 
     score -= 4;
@@ -374,11 +374,10 @@ function spawnBurstAtPointer(event, className, symbol) {
   const burst = document.createElement("div");
   burst.className = `drop-burst ${className}`;
 
-  const containerRect = gameContainer.getBoundingClientRect();
-  burst.style.left = `${event.clientX - containerRect.left}px`;
-  burst.style.top = `${event.clientY - containerRect.top}px`;
+  burst.style.left = `${event.clientX}px`;
+  burst.style.top = `${event.clientY}px`;
   burst.textContent = symbol;
-  gameContainer.appendChild(burst);
+  document.body.appendChild(burst);
   burst.addEventListener("animationend", () => burst.remove());
 }
 

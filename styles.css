@@ -283,7 +283,7 @@ body {
 }
 
 .drop-burst {
-    position: absolute;
+    position: fixed;
     width: 42px;
     height: 42px;
     margin-left: -21px;
@@ -316,6 +316,10 @@ body {
     box-shadow: 0 0 0 4px rgba(19, 19, 19, 0.18);
 }
 
+.drop-burst {
+    transform: translate(-50%, -50%);
+}
+
 .game-title {
     color: var(--cw-ink);
     font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
@@ -335,6 +339,63 @@ body {
     letter-spacing: 0.35px;
     margin-bottom: 20px;
     text-align: center;
+}
+
+.game-footer {
+    width: 800px;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(46, 157, 247, 0.22);
+    box-shadow: 0 8px 20px rgba(14, 62, 97, 0.08);
+}
+
+.footer-copy {
+    color: var(--cw-ink);
+    font-family: "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.footer-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(46, 157, 247, 0.25);
+    color: var(--cw-blue);
+    background: #f8fbff;
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+    transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.footer-links a:hover {
+    background: var(--cw-yellow);
+    color: var(--cw-ink);
+    transform: translateY(-1px);
+}
+
+.footer-links a:focus-visible {
+    outline: 3px solid rgba(46, 157, 247, 0.35);
+    outline-offset: 2px;
 }
 
 .tagline-good {
@@ -417,15 +478,15 @@ body {
 
 @keyframes burstPop {
     0% {
-        transform: scale(0.4);
+        transform: translate(-50%, -50%) scale(0.4);
         opacity: 0;
     }
     35% {
-        transform: scale(1.05);
+        transform: translate(-50%, -50%) scale(1.05);
         opacity: 1;
     }
     100% {
-        transform: translateY(-26px) scale(1.2);
+        transform: translate(-50%, -50%) translateY(-26px) scale(1.2);
         opacity: 0;
     }
 }
@@ -458,6 +519,10 @@ body {
 
 @media (max-width: 850px) {
     .game-wrapper, .score-panel, #game-container, .feedback-message {
+        width: 95vw;
+    }
+
+    .game-footer {
         width: 95vw;
     }
 
@@ -513,6 +578,16 @@ body {
     .feedback-icon {
         width: 26px;
         height: 26px;
+    }
+
+    .game-footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
     }
 
     #game-container {
