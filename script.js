@@ -11,6 +11,7 @@ let challengeActive = false;
 let celebrationTimeout;
 let currentSettings;
 let audioContext;
+let announcedMilestones = new Set();
 
 const DIFFICULTY_SETTINGS = {
   easy: {
@@ -77,6 +78,12 @@ const losingMessages = [
   "Keep going! You can hit the clean water goal next round."
 ];
 
+const milestoneRules = [
+  { score: 5, message: "Milestone reached: great start!" },
+  { score: 10, message: "Milestone reached: halfway to the goal!" },
+  { score: 15, message: "Milestone reached: strong momentum!" }
+];
+
 const startButton = document.getElementById("start-btn");
 const resetButton = document.getElementById("reset-btn");
 const gameContainer = document.getElementById("game-container");
@@ -87,10 +94,12 @@ const difficultySelect = document.getElementById("difficulty-select");
 const challengeStatusDisplay = document.getElementById("challenge-status");
 const feedbackDisplay = document.getElementById("feedback-message");
 const feedbackText = feedbackDisplay.querySelector("span");
+const milestoneDisplay = document.getElementById("milestone-message");
 const celebrationOverlay = document.getElementById("celebration-overlay");
 
 currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
 updateTargetScoreDisplay();
+updateMilestoneMessage("Milestones will appear as you score.", "good");
 
 difficultySelect.addEventListener("change", () => {
   currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
@@ -115,6 +124,7 @@ function startGame() {
   gameRunning = true;
   score = 0;
   timeLeft = currentSettings.timeLimit;
+  resetMilestones();
   updateScore();
   updateTime();
   updateTargetScoreDisplay();
@@ -269,6 +279,7 @@ function deactivateChallenge() {
 
 function updateScore() {
   scoreDisplay.textContent = score;
+  checkMilestones();
 }
 
 function updateTime() {
@@ -320,6 +331,7 @@ function resetGame() {
   challengeActive = false;
   score = 0;
   timeLeft = currentSettings.timeLimit;
+  resetMilestones();
 
   updateScore();
   updateTime();
@@ -375,6 +387,46 @@ function updateChallengeStatus(label, isDanger) {
 
 function updateTargetScoreDisplay() {
   targetScoreDisplay.textContent = currentSettings.targetScore;
+}
+
+function resetMilestones() {
+  announcedMilestones = new Set();
+  updateMilestoneMessage("Milestones will appear as you score.", "good");
+}
+
+function checkMilestones() {
+  const availableMilestone = getMilestoneRules()
+    .filter((milestone) => score >= milestone.score && !announcedMilestones.has(milestone.score))
+    .sort((firstMilestone, secondMilestone) => secondMilestone.score - firstMilestone.score)[0];
+
+  if (availableMilestone) {
+    announcedMilestones.add(availableMilestone.score);
+    updateMilestoneMessage(availableMilestone.message, "good");
+    return;
+  }
+}
+
+function getMilestoneRules() {
+  const goalMilestone = {
+    score: currentSettings.targetScore,
+    message: `Goal milestone reached: ${currentSettings.targetScore} points!`
+  };
+
+  const rules = [...milestoneRules];
+  if (!rules.some((milestone) => milestone.score === goalMilestone.score)) {
+    rules.push(goalMilestone);
+  }
+
+  return rules;
+}
+
+function updateMilestoneMessage(message, type) {
+  milestoneDisplay.textContent = message;
+  milestoneDisplay.classList.remove("good", "bad");
+
+  if (type) {
+    milestoneDisplay.classList.add(type);
+  }
 }
 
 function initAudio() {
