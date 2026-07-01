@@ -212,7 +212,7 @@ function createObstacle() {
   obstacle.style.animationDuration = `${Math.random() * 1.4 + 2.2}s`;
   obstacle.style.setProperty("--obstacle-fall-distance", `${gameContainer.clientHeight + 40}px`);
 
-  obstacle.addEventListener("click", (event) => {
+  obstacle.addEventListener("click", () => {
     if (!gameRunning || !challengeActive) return;
 
     score -= 4;

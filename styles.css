@@ -121,9 +121,9 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-family: "Playwrite NZ", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, "Segoe UI", sans-serif;
     font-size: 20px;
-    font-weight: 400;
+    font-weight: 600;
     letter-spacing: 0.2px;
     color: var(--cw-blue);
     transition: color 0.2s ease;
