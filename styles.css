@@ -1,0 +1,420 @@
+@import url("https://fonts.googleapis.com/css2?family=Jersey+25&family=Libre+Baskerville:wght@700&family=Oswald:wght@400;500;600;700&family=Playwrite+NZ:wght@100..400&display=swap");
+
+/* Charity: water Brand Colors & Fonts
+
+Primary Colors:
+- Yellow:     #FFC907
+- Blue:       #2E9DF7
+
+Secondary Colors:
+- Light Blue: #8BD1CB
+- Green:      #4FCB53
+- Orange:     #FF902A
+- Red:        #F5402C
+- Dark Green: #159A48
+- Pink:       #F16061
+
+Fonts:
+- Proxima Nova
+- Avenir
+
+*/
+
+:root {
+    --cw-yellow: #ffc907;
+    --cw-blue: #2e9df7;
+    --cw-light-blue: #8bd1cb;
+    --cw-green: #4fcb53;
+    --cw-red: #f5402c;
+    --cw-ink: #131313;
+    --cw-paper: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 12px;
+    background: linear-gradient(160deg, #e7f4ff 0%, #f5fbff 50%, #fffbea 100%);
+    font-family: "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: min(800px, 100%);
+    position: relative;
+}
+
+.brand-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.brand-logo {
+    width: clamp(220px, 40vw, 320px);
+    height: auto;
+}
+
+.score-panel {
+    display: flex;
+    justify-content: space-between;  /* Space between score and button */
+    align-items: center;
+    width: 800px;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 10px;
+    background-color: var(--cw-paper);
+    border-radius: 8px;
+    border-top: 6px solid var(--cw-yellow);
+    box-shadow: 0 8px 20px rgba(14, 62, 97, 0.12);
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.feedback-message {
+    width: 800px;
+    min-height: 28px;
+    margin-top: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: "Playwrite NZ", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    color: var(--cw-blue);
+    transition: color 0.2s ease;
+}
+
+.feedback-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.feedback-message.good {
+    color: var(--cw-green);
+}
+
+.feedback-message.bad {
+    color: var(--cw-red);
+}
+
+.timer {
+    flex: 0 1 auto;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.challenge {
+    flex: 0 1 auto;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--cw-ink);
+}
+
+#challenge-status {
+    color: var(--cw-green);
+}
+
+#challenge-status.danger {
+    color: var(--cw-red);
+}
+
+#game-container {
+    width: 800px;
+    height: 600px;
+    max-width: 100%;
+    min-height: 360px;
+    background: radial-gradient(circle at top, #f6fcff 0%, #d8efff 85%);
+    border: 2px solid var(--cw-blue);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+#game-container.challenge-active {
+    box-shadow: inset 0 0 0 999px rgba(245, 64, 44, 0.12);
+}
+
+
+#start-btn,
+#reset-btn {
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    padding: 8px 16px;
+    min-height: 44px;
+    color: var(--cw-ink);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+#start-btn {
+    background-color: var(--cw-yellow);
+}
+
+#reset-btn {
+    background-color: #efefef;
+    border: 1px solid #cfcfcf;
+}
+
+#start-btn:hover {
+    background-color: #ffd94d;
+}
+
+#reset-btn:hover {
+    background-color: #dddddd;
+}
+
+.score {
+    flex: 0 1 auto;  /* Don't grow, can shrink, auto basis */
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.timer,
+.challenge,
+#challenge-status {
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.water-drop {
+    position: absolute;
+    width: 60px;  /* increased from 40px */
+    height: 60px; /* increased from 40px */
+    background-image: url("img/water-can-transparent.png"), radial-gradient(circle at 30% 28%, #dff4ff 0%, #9bd9ff 30%, #2e9df7 72%, #1d71be 100%);
+    background-repeat: no-repeat, no-repeat;
+    background-position: center 56%, center;
+    background-size: 42% 42%, 100% 100%;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 62% 12%, 74% 26%, 86% 44%, 87% 62%, 80% 79%, 66% 92%, 50% 97%, 34% 92%, 20% 79%, 13% 62%, 14% 44%, 26% 26%, 38% 12%);
+    border: 2px solid rgba(46, 157, 247, 0.45);
+    animation: dropFall linear forwards;
+    transform-origin: center;
+    cursor: pointer;
+    padding: 15px;  /* Add padding for larger click area */
+    margin: -15px;  /* Offset padding to maintain visual size */
+    transition: transform 0.1s ease;  /* Smooth hover effect */
+}
+
+.water-drop:hover {
+    transform: scale(1.1);  /* Slight grow effect on hover */
+}
+
+.bad-drop {
+    background-color: rgba(245, 64, 44, 0.16);
+    background-image: url("img/garbage-icon.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 72% 72%;
+    clip-path: none;
+    border-radius: 50%;
+    border-color: rgba(245, 64, 44, 0.45);
+}
+
+.trash-obstacle {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    border: 2px solid #666666;
+    background-color: rgba(106, 106, 106, 0.15);
+    background-image: url("img/garbage-icon.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 82% 82%;
+    cursor: pointer;
+    animation: obstacleFall linear forwards;
+}
+
+.game-title {
+    color: var(--cw-ink);
+    font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+    font-size: 48px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-top: 0;
+    margin-bottom: 5px;  /* reduced from 20px */
+    text-align: center;
+}
+
+.game-tagline {
+    color: #4b5966;
+    font-family: "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.35px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tagline-good {
+    color: var(--cw-blue);
+    font-weight: 700;
+}
+
+.tagline-bad {
+    color: var(--cw-red);
+    font-weight: 700;
+}
+
+.celebration-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.celebration-overlay.show {
+    opacity: 1;
+}
+
+.celebration-text {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--cw-yellow);
+    color: var(--cw-ink);
+    font-family: "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: clamp(26px, 4vw, 44px);
+    font-weight: 800;
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    animation: celebrationPop 0.45s ease-out;
+    text-align: center;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    top: -24px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+}
+
+@keyframes dropFall {
+    from {
+        transform: translateY(-20px);
+    }
+    to {
+        transform: translateY(var(--drop-fall-distance, 600px));
+    }
+}
+
+@keyframes obstacleFall {
+    from {
+        transform: translateY(-80px) rotate(0deg);
+    }
+    to {
+        transform: translateY(var(--obstacle-fall-distance, 650px)) rotate(120deg);
+    }
+}
+
+@keyframes celebrationPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0.4);
+        opacity: 0;
+    }
+    65% {
+        transform: translate(-50%, -50%) scale(1.08);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(700px) rotate(540deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 850px) {
+    .game-wrapper, .score-panel, #game-container, .feedback-message {
+        width: 95vw;
+    }
+
+    .score-panel {
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    #game-container {
+        height: 68vh;
+    }
+}
+
+@media (max-width: 560px) {
+    .game-title {
+        font-size: 36px;
+    }
+
+    .game-tagline {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .score,
+    .timer,
+    .challenge {
+        font-size: 20px;
+    }
+
+    #start-btn,
+    #reset-btn {
+        width: 100%;
+        font-size: 17px;
+    }
+
+    .feedback-message {
+        font-size: 17px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 8px;
+        text-align: center;
+    }
+
+    .feedback-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    #game-container {
+        height: 62vh;
+        min-height: 320px;
+    }
+}
