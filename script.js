@@ -10,6 +10,7 @@ let timeLeft = 30;
 let challengeActive = false;
 let celebrationTimeout;
 let currentSettings;
+let audioContext;
 
 const DIFFICULTY_SETTINGS = {
   easy: {
@@ -174,9 +175,11 @@ function createDrop() {
       const dirtyPenalty = challengeActive ? currentSettings.challengeDirtyPenalty : currentSettings.dirtyPenalty;
       score -= dirtyPenalty;
       setFeedback(`Dirty drop! -${dirtyPenalty} points`, "bad");
+      playSound("dirty");
     } else {
       score += 2;
       setFeedback("Great catch! +2 points", "good");
+      playSound("collect");
     }
     updateScore();
     setTimeout(() => drop.remove(), 120);
@@ -192,6 +195,7 @@ function createDrop() {
       score -= missPenalty;
       updateScore();
       setFeedback(`Missed clean drop! -${missPenalty} point${missPenalty > 1 ? "s" : ""}`, "bad");
+      playSound("miss");
     }
 
     dropHandled = true;
@@ -219,6 +223,7 @@ function createObstacle() {
     updateScore();
     setFeedback("Hit trash obstacle! -4 points", "bad");
     spawnBurstAtPointer(event, "obstacle-hit", "x");
+    playSound("obstacle");
     obstacle.remove();
   });
 
@@ -295,6 +300,7 @@ function endGame() {
   if (score >= currentSettings.targetScore) {
     launchCelebration();
     setFeedback(`${pickRandomMessage(winningMessages)} Final score: ${score}`, "good");
+    playSound("win");
   } else {
     clearCelebration();
     setFeedback(`${pickRandomMessage(losingMessages)} Final score: ${score}`, "bad");
@@ -368,6 +374,64 @@ function updateChallengeStatus(label, isDanger) {
 
 function updateTargetScoreDisplay() {
   targetScoreDisplay.textContent = currentSettings.targetScore;
+}
+
+function initAudio() {
+  if (audioContext) return;
+
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  audioContext = new AudioContextClass();
+}
+
+function playSound(type) {
+  if (!audioContext) return;
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+
+  const now = audioContext.currentTime;
+  const masterGain = audioContext.createGain();
+  masterGain.gain.value = 0.04;
+  masterGain.connect(audioContext.destination);
+
+  const playTone = (frequency, startTime, duration, waveType = "sine", gainValue = 0.18) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    oscillator.type = waveType;
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+    gainNode.gain.setValueAtTime(0.0001, startTime);
+    gainNode.gain.exponentialRampToValueAtTime(gainValue, startTime + 0.015);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    oscillator.connect(gainNode);
+    gainNode.connect(masterGain);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.03);
+  };
+
+  if (type === "collect") {
+    playTone(660, now, 0.09, "triangle", 0.2);
+    playTone(990, now + 0.06, 0.11, "triangle", 0.16);
+  } else if (type === "miss") {
+    playTone(220, now, 0.14, "sine", 0.18);
+    playTone(160, now + 0.08, 0.16, "sine", 0.14);
+  } else if (type === "win") {
+    playTone(523.25, now, 0.11, "triangle", 0.18);
+    playTone(659.25, now + 0.1, 0.11, "triangle", 0.18);
+    playTone(783.99, now + 0.2, 0.14, "triangle", 0.2);
+  } else if (type === "dirty") {
+    playTone(180, now, 0.1, "square", 0.12);
+    playTone(110, now + 0.06, 0.14, "square", 0.1);
+  } else if (type === "obstacle") {
+    playTone(300, now, 0.08, "triangle", 0.14);
+    playTone(140, now + 0.04, 0.12, "triangle", 0.1);
+  }
+
+  setTimeout(() => {
+    masterGain.disconnect();
+  }, 500);
 }
 
 function spawnBurstAtPointer(event, className, symbol) {
