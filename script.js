@@ -111,6 +111,7 @@ function startGame() {
   if (gameRunning) return;
 
   currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
+  initAudio();
   gameRunning = true;
   score = 0;
   timeLeft = currentSettings.timeLimit;
@@ -216,7 +217,7 @@ function createObstacle() {
   obstacle.style.animationDuration = `${Math.random() * 1.4 + 2.2}s`;
   obstacle.style.setProperty("--obstacle-fall-distance", `${gameContainer.clientHeight + 40}px`);
 
-  obstacle.addEventListener("click", () => {
+  obstacle.addEventListener("click", (event) => {
     if (!gameRunning || !challengeActive) return;
 
     score -= 4;
@@ -383,6 +384,9 @@ function initAudio() {
   if (!AudioContextClass) return;
 
   audioContext = new AudioContextClass();
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
 }
 
 function playSound(type) {
