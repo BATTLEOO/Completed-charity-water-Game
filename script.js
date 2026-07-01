@@ -163,10 +163,13 @@ function createDrop() {
   drop.style.setProperty("--drop-fall-distance", `${gameContainer.clientHeight + 30}px`);
   let dropHandled = false;
 
-  drop.addEventListener("click", () => {
+  drop.addEventListener("click", (event) => {
     if (!gameRunning || dropHandled) return;
 
     dropHandled = true;
+    drop.classList.add("collected");
+    spawnBurstAtPointer(event, isBadDrop ? "bad" : "good", isBadDrop ? "-" : "+");
+
     if (isBadDrop) {
       const dirtyPenalty = challengeActive ? currentSettings.challengeDirtyPenalty : currentSettings.dirtyPenalty;
       score -= dirtyPenalty;
@@ -176,7 +179,7 @@ function createDrop() {
       setFeedback("Great catch! +2 points", "good");
     }
     updateScore();
-    drop.remove();
+    setTimeout(() => drop.remove(), 120);
   });
 
   // Add the new drop to the game screen
@@ -215,6 +218,7 @@ function createObstacle() {
     score -= 4;
     updateScore();
     setFeedback("Hit trash obstacle! -4 points", "bad");
+    spawnBurstAtPointer(event, "obstacle-hit", "x");
     obstacle.remove();
   });
 
@@ -364,6 +368,18 @@ function updateChallengeStatus(label, isDanger) {
 
 function updateTargetScoreDisplay() {
   targetScoreDisplay.textContent = currentSettings.targetScore;
+}
+
+function spawnBurstAtPointer(event, className, symbol) {
+  const burst = document.createElement("div");
+  burst.className = `drop-burst ${className}`;
+
+  const containerRect = gameContainer.getBoundingClientRect();
+  burst.style.left = `${event.clientX - containerRect.left}px`;
+  burst.style.top = `${event.clientY - containerRect.top}px`;
+  burst.textContent = symbol;
+  gameContainer.appendChild(burst);
+  burst.addEventListener("animationend", () => burst.remove());
 }
 
 function setFeedback(message, type) {

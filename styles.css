@@ -252,6 +252,10 @@ body {
     transform: scale(1.1);  /* Slight grow effect on hover */
 }
 
+.water-drop.collected {
+    animation: dropCollect 0.12s ease-out forwards;
+}
+
 .bad-drop {
     background-color: rgba(245, 64, 44, 0.16);
     background-image: url("img/garbage-icon.svg");
@@ -276,6 +280,40 @@ body {
     background-size: 82% 82%;
     cursor: pointer;
     animation: obstacleFall linear forwards;
+}
+
+.drop-burst {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    margin-left: -21px;
+    margin-top: -21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--cw-paper);
+    pointer-events: none;
+    animation: burstPop 0.45s ease-out forwards;
+    z-index: 6;
+}
+
+.drop-burst.good {
+    background: rgba(79, 203, 83, 0.92);
+    box-shadow: 0 0 0 4px rgba(79, 203, 83, 0.18);
+}
+
+.drop-burst.bad {
+    background: rgba(245, 64, 44, 0.92);
+    box-shadow: 0 0 0 4px rgba(245, 64, 44, 0.18);
+}
+
+.drop-burst.obstacle-hit {
+    background: rgba(19, 19, 19, 0.88);
+    box-shadow: 0 0 0 4px rgba(19, 19, 19, 0.18);
 }
 
 .game-title {
@@ -363,6 +401,32 @@ body {
     }
     to {
         transform: translateY(var(--obstacle-fall-distance, 650px)) rotate(120deg);
+    }
+}
+
+@keyframes dropCollect {
+    from {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.35) rotate(28deg);
+        opacity: 0;
+    }
+}
+
+@keyframes burstPop {
+    0% {
+        transform: scale(0.4);
+        opacity: 0;
+    }
+    35% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-26px) scale(1.2);
+        opacity: 0;
     }
 }
 
