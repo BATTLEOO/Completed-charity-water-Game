@@ -398,10 +398,10 @@ function playSound(type) {
 
   const now = audioContext.currentTime;
   const masterGain = audioContext.createGain();
-  masterGain.gain.value = 0.04;
+  masterGain.gain.value = 0.12;
   masterGain.connect(audioContext.destination);
 
-  const playTone = (frequency, startTime, duration, waveType = "sine", gainValue = 0.18) => {
+  const playTone = (frequency, startTime, duration, waveType = "sine", gainValue = 0.5) => {
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     oscillator.type = waveType;
@@ -416,21 +416,21 @@ function playSound(type) {
   };
 
   if (type === "collect") {
-    playTone(660, now, 0.09, "triangle", 0.2);
-    playTone(990, now + 0.06, 0.11, "triangle", 0.16);
+    playTone(660, now, 0.09, "triangle", 0.5);
+    playTone(990, now + 0.06, 0.11, "triangle", 0.42);
   } else if (type === "miss") {
-    playTone(220, now, 0.14, "sine", 0.18);
-    playTone(160, now + 0.08, 0.16, "sine", 0.14);
+    playTone(220, now, 0.14, "sine", 0.45);
+    playTone(160, now + 0.08, 0.16, "sine", 0.34);
   } else if (type === "win") {
-    playTone(523.25, now, 0.11, "triangle", 0.18);
-    playTone(659.25, now + 0.1, 0.11, "triangle", 0.18);
-    playTone(783.99, now + 0.2, 0.14, "triangle", 0.2);
+    playTone(523.25, now, 0.11, "triangle", 0.45);
+    playTone(659.25, now + 0.1, 0.11, "triangle", 0.45);
+    playTone(783.99, now + 0.2, 0.14, "triangle", 0.5);
   } else if (type === "dirty") {
-    playTone(180, now, 0.1, "square", 0.12);
-    playTone(110, now + 0.06, 0.14, "square", 0.1);
+    playTone(180, now, 0.1, "square", 0.34);
+    playTone(110, now + 0.06, 0.14, "square", 0.26);
   } else if (type === "obstacle") {
-    playTone(300, now, 0.08, "triangle", 0.14);
-    playTone(140, now + 0.04, 0.12, "triangle", 0.1);
+    playTone(300, now, 0.08, "triangle", 0.32);
+    playTone(140, now + 0.04, 0.12, "triangle", 0.24);
   }
 
   setTimeout(() => {
