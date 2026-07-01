@@ -81,6 +81,38 @@ body {
     font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
 }
 
+.goal,
+.difficulty-control {
+    flex: 0 1 auto;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--cw-ink);
+    font-family: "Jersey 25", "Oswald", "Avenir Next", Avenir, "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.difficulty-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.difficulty-control label {
+    font: inherit;
+}
+
+.difficulty-control select {
+    min-height: 44px;
+    min-width: 120px;
+    padding: 8px 12px;
+    border: 1px solid #cfdbe8;
+    border-radius: 6px;
+    background: #f8fbff;
+    color: var(--cw-ink);
+    font: inherit;
+    cursor: pointer;
+}
+
 .feedback-message {
     width: 800px;
     min-height: 28px;
@@ -388,8 +420,14 @@ body {
 
     .score,
     .timer,
-    .challenge {
+    .challenge,
+    .goal,
+    .difficulty-control {
         font-size: 20px;
+    }
+
+    .difficulty-control select {
+        min-width: 110px;
     }
 
     #start-btn,

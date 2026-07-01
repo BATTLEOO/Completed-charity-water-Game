@@ -9,8 +9,58 @@ let score = 0;
 let timeLeft = 30;
 let challengeActive = false;
 let celebrationTimeout;
+let currentSettings;
 
-const TARGET_SCORE = 20;
+const DIFFICULTY_SETTINGS = {
+  easy: {
+    label: "Easy",
+    timeLimit: 40,
+    targetScore: 16,
+    dropInterval: 850,
+    badDropChance: 0.12,
+    challengeBadDropChance: 0.3,
+    dirtyPenalty: 2,
+    challengeDirtyPenalty: 4,
+    missPenalty: 1,
+    challengeMissPenalty: 1,
+    challengeDelayMin: 8000,
+    challengeDelayMax: 12000,
+    challengeDuration: 3200,
+    obstacleInterval: 1200
+  },
+  normal: {
+    label: "Normal",
+    timeLimit: 30,
+    targetScore: 20,
+    dropInterval: 700,
+    badDropChance: 0.2,
+    challengeBadDropChance: 0.45,
+    dirtyPenalty: 3,
+    challengeDirtyPenalty: 5,
+    missPenalty: 1,
+    challengeMissPenalty: 2,
+    challengeDelayMin: 5000,
+    challengeDelayMax: 8000,
+    challengeDuration: 4500,
+    obstacleInterval: 900
+  },
+  hard: {
+    label: "Hard",
+    timeLimit: 24,
+    targetScore: 26,
+    dropInterval: 560,
+    badDropChance: 0.3,
+    challengeBadDropChance: 0.6,
+    dirtyPenalty: 4,
+    challengeDirtyPenalty: 6,
+    missPenalty: 2,
+    challengeMissPenalty: 3,
+    challengeDelayMin: 3500,
+    challengeDelayMax: 6500,
+    challengeDuration: 5600,
+    obstacleInterval: 650
+  }
+};
 
 const winningMessages = [
   "Amazing work! You helped protect clean water.",
@@ -22,7 +72,7 @@ const winningMessages = [
 const losingMessages = [
   "Try again! Keep focusing on clean drops.",
   "Almost there. Try again and avoid dirty drops.",
-  "Good effort! Try again to reach 20 points.",
+  "Good effort! Try again to hit the goal.",
   "Keep going! You can hit the clean water goal next round."
 ];
 
@@ -31,10 +81,25 @@ const resetButton = document.getElementById("reset-btn");
 const gameContainer = document.getElementById("game-container");
 const scoreDisplay = document.getElementById("score");
 const timeDisplay = document.getElementById("time");
+const targetScoreDisplay = document.getElementById("target-score");
+const difficultySelect = document.getElementById("difficulty-select");
 const challengeStatusDisplay = document.getElementById("challenge-status");
 const feedbackDisplay = document.getElementById("feedback-message");
 const feedbackText = feedbackDisplay.querySelector("span");
 const celebrationOverlay = document.getElementById("celebration-overlay");
+
+currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
+updateTargetScoreDisplay();
+
+difficultySelect.addEventListener("change", () => {
+  currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
+  updateTargetScoreDisplay();
+  if (!gameRunning) {
+    timeLeft = currentSettings.timeLimit;
+    updateTime();
+    setFeedback(`${currentSettings.label} mode selected. Goal: ${currentSettings.targetScore} points in ${currentSettings.timeLimit}s.`, "good");
+  }
+});
 
 // Wait for button click to start the game
 startButton.addEventListener("click", startGame);
@@ -44,20 +109,26 @@ function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
 
+  currentSettings = DIFFICULTY_SETTINGS[difficultySelect.value] || DIFFICULTY_SETTINGS.normal;
   gameRunning = true;
   score = 0;
-  timeLeft = 30;
+  timeLeft = currentSettings.timeLimit;
   updateScore();
   updateTime();
+  updateTargetScoreDisplay();
   updateChallengeStatus("Calm", false);
   clearTimeout(celebrationTimeout);
   clearCelebration();
   gameContainer.innerHTML = "";
   startButton.textContent = "Playing...";
-  setFeedback("Collect clean drops (+2). Avoid dirty drops (-3).", "good");
+  difficultySelect.disabled = true;
+  setFeedback(
+    `${currentSettings.label} mode: score ${currentSettings.targetScore} points in ${currentSettings.timeLimit}s. Clean drops are +2 and dirty drops cost more during surges.`,
+    "good"
+  );
 
   // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 700);
+  dropMaker = setInterval(createDrop, currentSettings.dropInterval);
   timerTick = setInterval(updateGameTimer, 1000);
   scheduleChallenge();
 }
@@ -69,7 +140,7 @@ function createDrop() {
   const drop = document.createElement("div");
   drop.className = "water-drop";
 
-  const badDropChance = challengeActive ? 0.45 : 0.2;
+  const badDropChance = challengeActive ? currentSettings.challengeBadDropChance : currentSettings.badDropChance;
   const isBadDrop = Math.random() < badDropChance;
   if (isBadDrop) {
     drop.classList.add("bad-drop");
@@ -97,7 +168,7 @@ function createDrop() {
 
     dropHandled = true;
     if (isBadDrop) {
-      const dirtyPenalty = challengeActive ? 5 : 3;
+      const dirtyPenalty = challengeActive ? currentSettings.challengeDirtyPenalty : currentSettings.dirtyPenalty;
       score -= dirtyPenalty;
       setFeedback(`Dirty drop! -${dirtyPenalty} points`, "bad");
     } else {
@@ -114,7 +185,7 @@ function createDrop() {
   // Remove drops that reach the bottom (weren't clicked)
   drop.addEventListener("animationend", () => {
     if (!dropHandled && gameRunning && !isBadDrop) {
-      const missPenalty = challengeActive ? 2 : 1;
+      const missPenalty = challengeActive ? currentSettings.challengeMissPenalty : currentSettings.missPenalty;
       score -= missPenalty;
       updateScore();
       setFeedback(`Missed clean drop! -${missPenalty} point${missPenalty > 1 ? "s" : ""}`, "bad");
@@ -157,7 +228,7 @@ function createObstacle() {
 function scheduleChallenge() {
   if (!gameRunning) return;
 
-  const nextChallengeDelay = Math.random() * 3000 + 5000;
+  const nextChallengeDelay = Math.random() * (currentSettings.challengeDelayMax - currentSettings.challengeDelayMin) + currentSettings.challengeDelayMin;
   challengeTimer = setTimeout(activateChallenge, nextChallengeDelay);
 }
 
@@ -169,8 +240,8 @@ function activateChallenge() {
   gameContainer.classList.add("challenge-active");
   setFeedback("Pollution surge! More bad drops and trash obstacles.", "bad");
 
-  obstacleMaker = setInterval(createObstacle, 900);
-  challengeEndTimer = setTimeout(deactivateChallenge, 4500);
+  obstacleMaker = setInterval(createObstacle, currentSettings.obstacleInterval);
+  challengeEndTimer = setTimeout(deactivateChallenge, currentSettings.challengeDuration);
 }
 
 function deactivateChallenge() {
@@ -215,8 +286,9 @@ function endGame() {
   gameContainer.classList.remove("challenge-active");
   gameContainer.innerHTML = "";
   startButton.textContent = "Start Game";
+  difficultySelect.disabled = false;
 
-  if (score >= TARGET_SCORE) {
+  if (score >= currentSettings.targetScore) {
     launchCelebration();
     setFeedback(`${pickRandomMessage(winningMessages)} Final score: ${score}`, "good");
   } else {
@@ -236,7 +308,7 @@ function resetGame() {
 
   challengeActive = false;
   score = 0;
-  timeLeft = 30;
+  timeLeft = currentSettings.timeLimit;
 
   updateScore();
   updateTime();
@@ -245,7 +317,9 @@ function resetGame() {
   gameContainer.classList.remove("challenge-active");
   gameContainer.innerHTML = "";
   startButton.textContent = "Start Game";
+  difficultySelect.disabled = false;
   clearCelebration();
+  updateTargetScoreDisplay();
   setFeedback("Game reset. Press Start Game to play.", "good");
 }
 
@@ -286,6 +360,10 @@ function pickRandomMessage(messages) {
 function updateChallengeStatus(label, isDanger) {
   challengeStatusDisplay.textContent = label;
   challengeStatusDisplay.classList.toggle("danger", isDanger);
+}
+
+function updateTargetScoreDisplay() {
+  targetScoreDisplay.textContent = currentSettings.targetScore;
 }
 
 function setFeedback(message, type) {

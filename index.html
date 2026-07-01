@@ -18,7 +18,16 @@
         <div class="score-panel">
             <div class="score">Score: <span id="score">0</span></div>
             <div class="timer">Time: <span id="time">30</span>s</div>
+            <div class="goal">Goal: <span id="target-score">20</span></div>
             <div class="challenge">Challenge: <span id="challenge-status">Calm</span></div>
+            <div class="difficulty-control">
+                <label for="difficulty-select">Mode</label>
+                <select id="difficulty-select" aria-label="Select difficulty mode">
+                    <option value="easy">Easy</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
             <button id="start-btn">Start Game</button>
             <button id="reset-btn">Reset</button>
         </div>
